@@ -46,7 +46,6 @@ const signIn = async (): Promise<void> => {
   try {
     await signInWithEmailAndPassword(getAuth(), email.value, password.value)
     router.push('/')
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Вход выполнен', life: 3000 })
   } catch (error: unknown) {
     if (error instanceof Error)
       toast.add({ severity: 'error', summary: 'Error', detail: error.message, life: 3000 })
