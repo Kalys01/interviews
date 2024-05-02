@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { getAuth } from 'firebase/auth'
+import { getFirestore, setDoc, doc } from 'firebase/firestore'
+import type { IInterview } from '@/interfaces'
+import { v4 as uuidv4 } from 'uuid'
+
+const db = getFirestore()
+const router = useRouter()
 
 const company = ref<string>('')
 const vacancyLink = ref<string>('')
@@ -13,7 +21,26 @@ const disabledSaveButton = computed<boolean>(() => {
   return !(company.value && vacancyLink.value && hrName.value)
 })
 
-const addNewInterview = () => {}
+const addNewInterview = async (): Promise<void> => {
+  loading.value = true
+  const payload: IInterview = {
+    id: uuidv4(),
+    company: company.value,
+    vacancyLink: vacancyLink.value,
+    hrName: hrName.value,
+    contactTelegram: contactTelegram.value,
+    contactWhatsApp: contactWhatsApp.value,
+    contactPhone: contactPhone.value,
+    createdAt: new Date()
+  }
+
+  const userId = getAuth().currentUser?.uid
+  if (userId) {
+    await setDoc(doc(db, `users/${userId}/interviews`, payload.id), payload).then(() => {
+      router.push('/list')
+    })
+  }
+}
 </script>
 
 <template>
@@ -37,7 +64,7 @@ const addNewInterview = () => {}
         <app-input-text
           v-model="contactWhatsApp"
           class="input mb-3"
-          placeholder="WhatsApp телефон Ник HR"
+          placeholder="WhatsApp телефон HR"
         />
         <app-input-text v-model="contactPhone" class="input mb-3" placeholder="Телефон HR" />
         <app-button
