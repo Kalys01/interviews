@@ -7,4 +7,14 @@ export interface IInterview {
   contactWhatsApp?: string
   contactPhone?: string
   createdAt: Data
+  salaryFrom?: number
+  salaryTo?: number
+  stages?: IStage[]
+  result: 'Refusal' | 'Offer'
+}
+
+export interface IStage {
+  name: string
+  date: string
+  description: string
 }
